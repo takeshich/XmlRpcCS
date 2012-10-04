@@ -3,9 +3,9 @@ XmlRpcCS
 
 ## Download
 
-Homepage: [XmlRpcCS](http://opaque.ods.org/XmlRpcCS/)
+Homepage: [XmlRpcCS](http://xmlrpccs.sourceforge.net/)
 
-Package: [XmlRpcCS-1.10.zip](http://opaque.ods.org/XmlRpcCS/XmlRpcCS-1.10.zip)
+Package: [XmlRpcCS-1.10.zip](http://sourceforge.net/projects/xmlrpccs/)
 
 ## Introduction
 
