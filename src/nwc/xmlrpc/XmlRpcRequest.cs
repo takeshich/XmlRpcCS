@@ -88,10 +88,35 @@ namespace Nwc.XmlRpc
 	return res.Value;
       }
 
-    /// <summary>Send the request to the server.</summary>
-    /// <param name="url"><c>String</c> The url of the XML-RPC server.</param>
-    /// <returns><c>XmlRpcResponse</c> The response generated.</returns>
-    public XmlRpcResponse Send(String url)
+        /// <summary>Send the request to the server.</summary>
+        /// <param name="url"><c>String</c> The url of the XML-RPC server.</param>
+        /// <returns><c>XmlRpcResponse</c> The response generated.</returns>
+        public XmlRpcResponse Send(String url)
+        {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            if (request == null)
+                throw new XmlRpcException(XmlRpcErrorCodes.TRANSPORT_ERROR,
+                              XmlRpcErrorCodes.TRANSPORT_ERROR_MSG + ": Could not create request with " + url);
+            request.Method = "POST";
+            request.ContentType = "text/xml";
+            request.AllowWriteStreamBuffering = true;
+
+            Stream stream = request.GetRequestStream();
+            XmlTextWriter xml = new XmlTextWriter(stream, _encoding);
+            _serializer.Serialize(xml, this);
+            xml.Flush();
+            xml.Close();
+
+            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+            StreamReader input = new StreamReader(response.GetResponseStream());
+
+            XmlRpcResponse resp = (XmlRpcResponse)_deserializer.Deserialize(input);
+            input.Close();
+            response.Close();
+            return resp;
+        }
+
+        public XmlRpcResponse Send(String url,int timeout)
       {
 	HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
 	if (request == null)
@@ -100,6 +125,7 @@ namespace Nwc.XmlRpc
 	request.Method = "POST";
 	request.ContentType = "text/xml";
 	request.AllowWriteStreamBuffering = true;
+    request.Timeout = timeout;
 
 	Stream stream = request.GetRequestStream();
 	XmlTextWriter xml = new XmlTextWriter(stream, _encoding);
